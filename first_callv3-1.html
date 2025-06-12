@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="mystyle_v3.css">
+    <title>MY WEATHER APP</title>
+</head>
+
+<body onload="initClock()">
+
+    <h1>Weather in Bristol</h1>
+
+    <!-- Digital clock start -->
+    <div class="datetime">
+        <div class="date">
+            <span id="dayname">Day</span>,
+            <span id="month">Month</span>
+            <span id="daynum">00</span>,
+            <span id="year">year</span>
+        </div>
+        <div class="time">
+            <span id="hour">00</span>:
+            <span id="minutes">00</span>:
+            <span id="seconds">00</span>
+            <span id="period">AM</span>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function updateClock() {
+            var now = new Date();
+            var dname = now.getDay();
+            var mo = now.getMonth();
+            var dnum = now.getDate();
+            var yr = now.getFullYear();
+            var hou = now.getUTCHours(); // Get UTC hours
+            var min = now.getUTCMinutes(); // Get UTC minutes 
+            var sec = now.getUTCSeconds(); // Get UTC seconds
+            var pe = "AM";
+
+            if (hou == 0){
+                hou = 12;
+            }
+            if (hou > 12){
+                hou = hou - 12;
+                pe = "PM";
+            }
+
+            Number.prototype.pad =  function(digits){
+                for(var n = this.toString(); n.length < digits; n = '0' + n);
+                return n;
+            }
+
+            var month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            var week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            var ids = ["dayname", "month", "daynum", "year", "hour", "minutes", "seconds", "period"];
+            var values = [week[dname], month[mo], dnum.pad(2), yr, hou.pad(2), min.pad(2), sec.pad(2), pe];
+            for (var i = 0; i < ids.length; i++)
+                document.getElementById(ids[i]).textContent = values[i];
+        }
+
+        function initClock() {
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+    </script>
+    <!-- Digital clock END -->
+
+
+
+
+    <!-- Other weather information -->
+	<p id="weather">Please wait...</p>
+    <p id="Humidity">Please wait...</p>
+    <p id="Temperature">Please wait...</p>
+    <p id="pressure">Please wait...</p>
+	<p id="LastUpdated">Please wait...</p>
+
+
+    <script>// Check browser cache first, use if there and less than 10 seconds old
+		if(localStorage.when != null
+		   && parseInt(localStorage.when) + 10000 > Date.now()) {
+
+			  let freshness = Math.round((Date.now() - localStorage.when)/1000) + " second(s)";
+			  document.getElementById("weather").innerHTML = localStorage.weather;
+			  document.getElementById("Humidity").innerHTML = 'Humidity: '+ localStorage.Humidity;
+			  document.getElementById("Temperature").innerHTML = 'Temperature: ' + localStorage.Temperature;
+			  document.getElementById("pressure").innerHTML = 'Pressure: ' +localStorage.pressure;
+			  document.getElementById("LastUpdated").innerHTML = freshness;
+			
+		// No local cache, access network
+		} else {
+			
+			// Fetch weather data from API for given city
+			fetch('https://mi-linux.wlv.ac.uk/~2349299/my-api.php?city=bristol')
+				
+			  // Convert response string to json object
+			  .then(response => response.json())
+			  .then(response => {
+					
+				// Copy one element of response to our HTML paragraph
+				document.getElementById("weather").innerHTML = response.weather_description;
+				document.getElementById("Humidity").innerHTML = 'Humidity: ' + response.weather_humidity + '%';
+				document.getElementById("Temperature").innerHTML = 'Temperature: ' + response.weather_temperature + '°C';
+				document.getElementById("pressure").innerHTML = 'Pressure: ' + response.weather_pressure+ '%';
+				document.getElementById("LastUpdated").innerHTML = 'LastUpdated: ' + response.weather_when; 
+
+
+				// Save new data to browser, with new timestamp
+				localStorage.weather = response.weather_description;
+				localStorage.Humidity = response.weather_humidity + '%';
+				localStorage.Temperature = response.weather_temperature + '°C';
+				localStorage.pressure = response.weather_pressure+ '%'; 
+				localStorage.when = Date.now(); // milliseconds since January 1 1970
+				
+			  })
+			  .catch(err => {
+				
+				// Display errors in console
+				console.log(err);
+			  });
+				}
+    </script>
+</body>
+</html>

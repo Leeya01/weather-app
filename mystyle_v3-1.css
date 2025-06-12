@@ -1,0 +1,35 @@
+body {
+  background-color: #5e6969;
+  text-align: center; 
+  font-family: Garamond, serif;
+
+}
+
+h1 {
+  font-size: 40px;
+}
+
+.date{
+  font-weight: 600;
+  letter-spacing: 3px;
+}
+
+.time span:not(:last-child) {
+  font-size: 15px; 
+  font-weight: 500;
+  letter-spacing: 3px;
+}
+
+.time span:last-child {
+  font-weight: 200;
+}
+
+#weather-icon {
+  width: 100px; /* Adjust the width as needed */
+  height: 100px; /* Adjust the height as needed */
+}
+
+#weather {
+  font-size: 25px;
+}
+
