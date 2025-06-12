@@ -3,8 +3,9 @@
  
 
 // Connect to database 
+// edited out sensitive info
 
-$mysqli = new mysqli("localhost","2349299","lqabdwdw","db2349299"); 
+$mysqli = new mysqli("localhost","","",""); 
 
 if ($mysqli -> connect_errno) { 
 
